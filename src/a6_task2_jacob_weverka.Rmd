@@ -5,17 +5,19 @@ date: "12/6/2020"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(janitor)
-library(stargazer)
 
 ```
-Read in the data and select the columns we need.
+
 
 ```{r}
+
+#Reading in the data and select the columns we need.
+
 survey = read_csv(here::here("data/conservation_survey.csv"))
 
 simple = survey %>%
@@ -23,9 +25,7 @@ simple = survey %>%
 
 ```
 
-
-To your simplified data frame, add a new column that bins the political party into a binary response of either “conservative” (if POL_OR is 1 - 3) or “liberal” (if POL_OR 5 - 7). All other political affiliations (4, 8, 9) should be excluded for this task. Hint: you might want to use dplyr::mutate() + dplyr::case_when() here. 
-
+In this analysis, I will examine survey results to determine whether political ideology is related to the likelihood of individuals self-identifying as environmentalists. Here, I'm binning respondents into political categories based on the question:  "How do you self-identify politically?" Responses with values 1-3 are conservative, responses with values 5-7 are liberal. I will not be including other responses in this analysis.
 
 ```{r}
 binned = simple %>%
@@ -44,11 +44,14 @@ binned = simple %>%
   drop_na()
 ```
 
-Create a finalized table that shows the counts and proportions of “liberal” and “conservative” survey respondents who responded “Yes”, “No” and “Unsure” to the statement “I consider myself an environmentalist.” Hint: see the Week 9 Coding Lesson key for hints on how to do this. This table should appear in the knitted document, with a table caption above it. 
+
 
 
 
 ```{r}
+# Here is is a table showing the survey results for liberals and conservatives asked if they agree with the statement "I consider myself an environmentalist."
+
+
 political_table = binned %>%
   tabyl(category, response)
 
@@ -78,12 +81,11 @@ knitr::kable(political_proportions, caption = "Proportions of Liberals and Conse
 ```
 
 
-Then, write code to convert the counts table to a contingency table (hint: column_to_rownames()) and perform a chi-square test for independence to answer: is there an association between political affiliation (conservative or liberal-leaning) and if a person considers themself an environmentalist? 
 
-
-
-
+.
 ```{r}
+
+# This code, now converts these same data into contingency table format so we can do a $\chi$^2^ test
 
 env_ct = political_table %>%
   column_to_rownames(var = "category")
@@ -92,12 +94,14 @@ env_ct = political_table %>%
 ```
 
 
-Chi-square test
+
 
 ```{r}
 
+# Now, performing a $\chi$^2^ test.
+
 env_x2 = chisq.test(env_ct)
-env_x2
+
 
 env_tidy = broom::tidy(env_x2)
 
@@ -106,7 +110,7 @@ There is a significant association between political preference and self-identif
 
 
 
-
+Data citation: [Andrews Forest LTER Site and C. Batavia. 2019](https://doi.org/10.6073/pasta/926e6270e324a1322a900da14d38b96c)
 
 
 

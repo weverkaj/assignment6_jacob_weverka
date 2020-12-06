@@ -417,58 +417,7 @@ summary {
 </div>
 
 
-<p>Read in the data and select the columns we need.</p>
-<pre class="r"><code>survey = read_csv(here::here(&quot;data/conservation_survey.csv&quot;))</code></pre>
-<pre><code>## 
-## -- Column specification --------------------------------------------------------
-## cols(
-##   .default = col_double(),
-##   DBCODE = col_character()
-## )
-## i Use `spec()` for the full column specifications.</code></pre>
-<pre class="r"><code>simple = survey %&gt;%
-  select(ENV_ID, POL_OR)</code></pre>
-<p>To your simplified data frame, add a new column that bins the political party into a binary response of either “conservative” (if POL_OR is 1 - 3) or “liberal” (if POL_OR 5 - 7). All other political affiliations (4, 8, 9) should be excluded for this task. Hint: you might want to use dplyr::mutate() + dplyr::case_when() here.</p>
-<pre class="r"><code>binned = simple %&gt;%
-  mutate(category = 
-           case_when(
-              POL_OR &lt;= 3 ~ &quot;Conservative&quot;,
-              POL_OR &gt;= 5 ~ &quot;Liberal&quot;
-              ),
-         response = 
-           case_when(
-             ENV_ID == 1 ~ &quot;Yes&quot;,
-             ENV_ID == 2 ~ &quot;No&quot;,
-             ENV_ID == 3 ~ &quot;Unsure&quot;
-           )
-  ) %&gt;%
-  drop_na()</code></pre>
-<p>Create a finalized table that shows the counts and proportions of “liberal” and “conservative” survey respondents who responded “Yes”, “No” and “Unsure” to the statement “I consider myself an environmentalist.” Hint: see the Week 9 Coding Lesson key for hints on how to do this. This table should appear in the knitted document, with a table caption above it.</p>
-<pre class="r"><code>political_table = binned %&gt;%
-  tabyl(category, response)
-
-political_p = political_table %&gt;%
-  adorn_percentages() %&gt;%
-  adorn_pct_formatting(digits = 2)
-
-political_proportions = political_p %&gt;%
-  adorn_ns() %&gt;%
-  relocate(category, Yes, No, Unsure) %&gt;%
-  clean_names(&quot;upper_camel&quot;)
-
-lib_yes = political_p %&gt;%
-  filter(category == &quot;Liberal&quot;) %&gt;%
-  select(Yes)
-
-con_yes = political_p %&gt;%
-  filter(category == &quot;Conservative&quot;) %&gt;%
-  select(Yes)
-
-
-
-
-
-knitr::kable(political_proportions, caption = &quot;Proportions of Liberals and Conservatives that Identify as Environmentalists. Actual survey counts are in parentheses next to percentages.&quot;)</code></pre>
+<p>In this analysis, I will examine survey results to determine whether political ideology is related to the likelihood of individuals self-identifying as environmentalists. Here, I’m binning respondents into political categories based on the question: “How do you self-identify politically?” Responses with values 1-3 are conservative, responses with values 5-7 are liberal. I will not be including other responses in this analysis.</p>
 <table>
 <caption>Proportions of Liberals and Conservatives that Identify as Environmentalists. Actual survey counts are in parentheses next to percentages.</caption>
 <thead>
@@ -494,19 +443,9 @@ knitr::kable(political_proportions, caption = &quot;Proportions of Liberals and 
 </tr>
 </tbody>
 </table>
-<p>Then, write code to convert the counts table to a contingency table (hint: column_to_rownames()) and perform a chi-square test for independence to answer: is there an association between political affiliation (conservative or liberal-leaning) and if a person considers themself an environmentalist?</p>
-<pre class="r"><code>env_ct = political_table %&gt;%
-  column_to_rownames(var = &quot;category&quot;)</code></pre>
-<p>Chi-square test</p>
-<pre class="r"><code>env_x2 = chisq.test(env_ct)
-env_x2</code></pre>
-<pre><code>## 
-##  Pearson&#39;s Chi-squared test
-## 
-## data:  env_ct
-## X-squared = 75.308, df = 2, p-value &lt; 2.2e-16</code></pre>
-<pre class="r"><code>env_tidy = broom::tidy(env_x2)</code></pre>
+<p>.</p>
 <p>There is a significant association between political preference and self-identification as an environmentalist (<span class="math inline">\(\chi\)</span><sup>2</sup>(2). = 75.31, <em>p</em> = 0). It appears that politically liberal people are more likely to identify as environmentalists, with 52.38% identifying as environmentalists, compared to 33.65% of conservatives self-identifying as environmentalists. `</p>
+<p>Data citation: <a href="https://doi.org/10.6073/pasta/926e6270e324a1322a900da14d38b96c">Andrews Forest LTER Site and C. Batavia. 2019</a></p>
 
 
 
