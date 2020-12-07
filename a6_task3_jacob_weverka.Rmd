@@ -1,21 +1,23 @@
 ---
-title: "Lizard Lengths"
+title: "Lizard Lengths in the Jornada Basin"
 author: "Jacob Weverka"
 date: "12/7/2020"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 
 
 ```
 
-Read in data
+In this analysis I will compare body lengths of females from two lizard species sampled from the Jornada Basin: the Checkered Whiptail (*Cnemidophorus tesselatus*) and the Desert Grassland Whiptail (*C. uniparens*). I will examine the mean and standard deviation of the body length for each species, then use a Welch Two Sample t-test and a Cohen's d effect size test to understand whether females of these species have a different mean size.
 
 ```{r}
+# Read in data
+
 
 lizard_data = read_csv(here::here("data/lizards.csv"))
 
@@ -25,8 +27,11 @@ lizards = lizard_data %>%
 
 ```
 
-Select only females 
+
 ```{r}
+
+# Select only females 
+
 females = lizards %>%
   filter(spp == "CNUN" | spp == "CNTE",
          sex == "F")
@@ -69,6 +74,8 @@ knitr::kable(length_sum,
 
 
 ```{r}
+# Vizualize means, SEs and actual data
+
 ggplot() +
   ggbeeswarm::geom_beeswarm(data = females, aes(x = spp, y = total_length),
                             size = 3,
