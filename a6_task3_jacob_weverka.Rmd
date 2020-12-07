@@ -9,6 +9,110 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+
+
 ```
+
+Read in data
+
+```{r}
+
+lizard_data = read_csv(here::here("data/lizards.csv"))
+
+lizards = lizard_data %>%
+  select(spp, sex, total_length)
+
+
+```
+
+Select only females 
+```{r}
+females = lizards %>%
+  filter(spp == "CNUN" | spp == "CNTE",
+         sex == "F")
+```
+
+
+```{r include=FALSE}
+
+# Exploratory vizualizations of data looking for normality - don't include in final report!
+
+ggplot(females, aes(x = total_length)) +
+  geom_histogram() +
+  facet_wrap(. ~ spp)
+
+ggplot(females, aes(sample = total_length)) +
+  geom_qq() +
+  facet_wrap(. ~ spp)
+
+# Data look fairly normal (mayble slightly deviated from normal)
+
+
+```
+
+```{r}
+length_sum = females %>%
+  group_by(spp) %>%
+  summarise(mean_length = mean(total_length, na.rm = TRUE), sd_length = sd(total_length, na.rm = TRUE))
+
+
+length_sum_round = length_sum %>%
+  mutate(mean_length = round(mean_length, 2),
+         sd_length = round(sd_length, 2))
+
+
+knitr::kable(length_sum,
+             col.names = c("Species", "Mean Length", "SD Lenght"))
+```
+
+
+
+
+```{r}
+ggplot() +
+  ggbeeswarm::geom_beeswarm(data = females, aes(x = spp, y = total_length),
+                            size = 3,
+                            alpha = 0.3) 
+```
+
+
+
+
+
+
+```{r}
+# Now a t-test
+
+cnun = females %>%
+  filter(spp == "CNUN") %>%
+  pull(total_length)
+
+cnte = females %>%
+  filter(spp == "CNTE") %>%
+  pull(total_length)
+
+species.t = t.test(cnte, cnun)
+
+species.tidy = broom::tidy(species.t)
+
+```
+
+```{r}
+# And a cohen's d effect size
+
+species.d = effsize::cohen.d(cnte, cnun, na.rm = TRUE)
+
+
+```
+
+
+
+
+
+
+
+
+
+
 
 
