@@ -58,7 +58,7 @@ ggplot(females, aes(sample = total_length)) +
 ```{r}
 length_sum = females %>%
   group_by(spp) %>%
-  summarise(mean_length = mean(total_length, na.rm = TRUE), sd_length = sd(total_length, na.rm = TRUE))
+  summarise(mean_length = mean(total_length, na.rm = TRUE), sd_length = sd(total_length, na.rm = TRUE), n = n())
 
 
 length_sum_round = length_sum %>%
@@ -66,14 +66,15 @@ length_sum_round = length_sum %>%
          sd_length = round(sd_length, 2))
 
 
-knitr::kable(length_sum,
-             col.names = c("Species", "Mean Length", "SD Length"))
+knitr::kable(length_sum_round,
+             col.names = c("Species", "Mean Length", "SD Length", "Sample Size"),
+             caption = "Means and standard deviations of body lengths for female Checkered Whiptails and Desert Grassland Whiptails")
 ```
 
 
 
 
-```{r}
+```{r fig.cap = "Body lengths of  female Checkered Whiptails and Desert Grassland Whiptails. Mean and standard deviation of body lengths for each species are shown in blue, while individual lizard body lengths are in grey."}
 # Vizualize means, SEs and actual data
 
 ggplot() +
@@ -126,9 +127,12 @@ species.d = effsize::cohen.d(cnte, cnun, na.rm = TRUE)
 
 ```
 
+Female Checkered Whiptails were one average `r round(species.tidy$estimate, 2)` mm longer than female Desert Grassland Whiptails (t(`r round(species.tidy$parameter, 2)`) = `r round(species.tidy$statistic, 2)`, p < `r format(signif(species.tidy$p.value, 3), scientific = TRUE)`). With a Cohen's d statistic of `r round(species.d$estimate, 2)` we can be confident that there is a fairly large difference in mean body length between the two species.
 
 
 
+Data Citation:
+[Lightfoot, D. 2017. Lizard pitfall trap data (LTER-II, LTER-III) ver 36. Environmental Data Initiative.](https://doi.org/10.6073/pasta/ff37b4cace16a9943575f3fd7067064e)
 
 
 
