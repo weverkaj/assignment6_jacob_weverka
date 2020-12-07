@@ -62,7 +62,7 @@ length_sum_round = length_sum %>%
 
 
 knitr::kable(length_sum,
-             col.names = c("Species", "Mean Length", "SD Lenght"))
+             col.names = c("Species", "Mean Length", "SD Length"))
 ```
 
 
@@ -72,7 +72,21 @@ knitr::kable(length_sum,
 ggplot() +
   ggbeeswarm::geom_beeswarm(data = females, aes(x = spp, y = total_length),
                             size = 3,
-                            alpha = 0.3) 
+                            alpha = 0.1) +
+  geom_point(data = length_sum, aes(x = spp, y = mean_length),
+             color = "slateblue4",
+             size = 5) +
+  geom_errorbar(data = length_sum,
+                aes(x = spp,
+                    ymin = mean_length - sd_length,
+                    ymax = mean_length + sd_length),
+                color = "slateblue4",
+                width = 0.2) +
+  xlab("Species") +
+  ylab("Body Length (mm)") +
+  scale_x_discrete(name = "Species",
+                   labels = c("CNTE" = "Checkered Whiptail", "CNUN" = "Desert Grassland Whiptail")) +
+  theme_bw()
 ```
 
 
