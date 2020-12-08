@@ -6,8 +6,67 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 library(tidyverse)
+library(janitor)
+library(ggrepel)
+
+
 ```
+
+
+```{r}
+mono = read_csv(here::here("data/mono_lake_annual_levels.csv"),
+                skip = 5) %>%
+  clean_names()
+```
+
+```{r}
+significant_years = mono %>%
+  filter(year %in% c(1941, 1976, 1978, 1979, 1983, 1984)) %>%
+  mutate(event = c("LADWP Starts Diverting Water", "First Comprehensive Ecological Study", "Mono Lake Committee Founded", "Mono Lake Comittee and National Audubon Society Sues DWP", "California Supreme Court rules that the state must protect Mono Lake", "State Water Board orders stream restoration for Mono Basin Streams"),
+         label = c(1:6))
+
+mono_labels = mono %>%
+  left_join(significant_years)
+
+
+```
+
+
+
+```{r}
+l = 6392
+
+ggplot(data = mono_labels, aes(x = year, y = lake_level_feet_above_sea_level)) +
+  geom_line() +
+  geom_point(data = significant_years, aes(x = year, y = lake_level_feet_above_sea_level),
+             color = "purple") +
+  geom_label_repel(aes(label = label, xlim = 6, ylim = 6),
+                   box.padding = 0.5,
+                   force = 3) +
+  geom_hline(yintercept = l) +
+  geom_text(aes(x = 1860,  y = l + 2), label = "Target Lake Level") +
+  theme_bw() +
+  labs(caption = paste("Surface Elevation of Mono Lake From 1850 to 2017. The target levels for conservation is 6392 feet. Significant \n moments in the conservation history of Mono Lake are labeled as follows:\n", paste(
+    paste(significant_years$label, significant_years$year, sep = "."), significant_years$event, sep = ":", collapse = "\n "))) +
+  theme(plot.caption = element_text(hjust = 0)) +
+  ylab("Lake Surface Level (feet above sea level)") +
+  xlab("Year")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
